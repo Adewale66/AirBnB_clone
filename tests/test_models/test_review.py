@@ -1,60 +1,36 @@
 #!/usr/bin/python3
-""" Test cases for the Review module """
+"""Defines unittests for models/review.py.
 
-
+Unittest classes:
+    TestReview_instantiation
+    TestReview_save
+    TestReview_to_dict
+"""
 import os
+import models
 import unittest
-from models.base_model import BaseModel
-from models.review import Review
-from time import sleep
 from datetime import datetime
+from time import sleep
+from models.review import Review
 
 
-class TestReview(unittest.TestCase):
-    """ Testcases for Review class"""
+class TestReview_instantiation(unittest.TestCase):
+    """Unittests for testing instantiation of the Review class."""
 
-    @classmethod
-    def setUp(self):
-        try:
-            os.rename("file.json", "tmp")
-        except IOError:
-            pass
+    def test_no_args_instantiates(self):
+        self.assertEqual(Review, type(Review()))
 
-    def tearDown(self):
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("tmp", "file.json")
-        except IOError:
-            pass
+    def test_new_instance_stored_in_objects(self):
+        self.assertIn(Review(), models.storage.all().values())
 
-    def test_docs(self):
-        """ Test for documentation """
-        self.assertIsNotNone(Review.__doc__)
+    def test_id_is_public_str(self):
+        self.assertEqual(str, type(Review().id))
 
-    def test_inheritance(self):
-        """ Test for inheritance """
+    def test_created_at_is_public_datetime(self):
+        self.assertEqual(datetime, type(Review().created_at))
 
-        my_review = Review()
-        self.assertIsInstance(my_review, BaseModel)
-        self.assertIsInstance(my_review, Review)
-
-    def test_attributes(self):
-        """ Test for attributes """
-
-        my_review = Review()
-        self.assertTrue(hasattr(my_review, "place_id"))
-        self.assertTrue(hasattr(my_review, "user_id"))
-        self.assertTrue(hasattr(my_review, "text"))
-        self.assertTrue(hasattr(my_review, "created_at"))
-        self.assertTrue(hasattr(my_review, "updated_at"))
-        self.assertTrue(hasattr(my_review, "id"))
-        self.assertTrue(hasattr(my_review, "to_dict"))
-        self.assertTrue(hasattr(my_review, "__str__"))
-        self.assertTrue(hasattr(my_review, "save"))
-        self.assertTrue(hasattr(my_review, "__class__"))
+    def test_updated_at_is_public_datetime(self):
+        self.assertEqual(datetime, type(Review().updated_at))
 
     def test_place_id_is_public_class_attribute(self):
         rv = Review()
@@ -119,6 +95,27 @@ class TestReview(unittest.TestCase):
         with self.assertRaises(TypeError):
             Review(id=None, created_at=None, updated_at=None)
 
+
+class TestReview_save(unittest.TestCase):
+    """Unittests for testing save method of the Review class."""
+
+    @classmethod
+    def setUp(self):
+        try:
+            os.rename("file.json", "tmp")
+        except IOError:
+            pass
+
+    def tearDown(self):
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
+        try:
+            os.rename("tmp", "file.json")
+        except IOError:
+            pass
+
     def test_one_save(self):
         rv = Review()
         sleep(0.05)
@@ -148,6 +145,10 @@ class TestReview(unittest.TestCase):
         rvid = "Review." + rv.id
         with open("file.json", "r") as f:
             self.assertIn(rvid, f.read())
+
+
+class TestReview_to_dict(unittest.TestCase):
+    """Unittests for testing to_dict method of the Review class."""
 
     def test_to_dict_type(self):
         self.assertTrue(dict, type(Review().to_dict()))

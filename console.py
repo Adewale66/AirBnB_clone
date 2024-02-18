@@ -52,7 +52,7 @@ class HBNBCommand(cmd.Cmd):
             return
         id = arg.split()[1]
         for _, value in storage.all().items():
-            if value.id == id:
+            if value.id == id and value.__class__.__name__ == arg.split()[0]:
                 print(value)
                 return
         print("** no instance found **")
@@ -63,7 +63,7 @@ class HBNBCommand(cmd.Cmd):
             return
         id = arg.split()[1]
         for key, value in storage.all().items():
-            if value.id == id:
+            if value.id == id and value.__class__.__name__ == arg.split()[0]:
                 del storage.all()[key]
                 storage.save()
                 return
@@ -126,7 +126,7 @@ class HBNBCommand(cmd.Cmd):
             return
 
         for _, obj in storage.all().items():
-            if obj.id == id:
+            if obj.id == id and obj.__class__.__name__ == model:
                 if hasattr(obj, attr):
                     value = type(getattr(obj, attr))(value)
                 setattr(obj, attr, value)
@@ -158,6 +158,30 @@ class HBNBCommand(cmd.Cmd):
         elif args[1].startswith("destroy("):
             id = args[1][9:-2]
             self.do_destroy(model + " " + id)
+        elif args[1].startswith("update("):
+            if "{" in args[1]:
+                args = re.split(r'[\(\),]', args[1])
+                id = args[1][1:-1]
+                kwargs = args[2:-1]
+                for obj in kwargs:
+                    attr, value = obj.split(":")
+                    if "{" in attr:
+                        attr = attr.strip()[2:-1]
+                    else:
+                        attr = attr.strip()[1:-1]
+                    if "}" in value and "\"" in value:
+                        value = value.strip()[1:-2]
+                    elif "\"" in value:
+                        value = value.strip()[1:-1]
+                    elif "}" in value and "\"" not in value:
+                        value = value.strip()[:-1]
+                    self.do_update(model + " " + id + " " + attr + " " + value)
+            else:
+                args = re.split(r'[\(\),]', args[1])
+                id = args[1][1:-1]
+                attr = args[2].strip()[1:-1]
+                value = args[3].strip()[1:-1]
+                self.do_update(model + " " + id + " " + attr + " " + value)
 
 
 if __name__ == '__main__':

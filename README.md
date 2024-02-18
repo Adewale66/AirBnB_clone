@@ -14,8 +14,43 @@ The console is responsible for:
 - managing objects via the console.
 - storing and persisting objects to a file(JSON file).
 
-## Usage:
+## Usage(interactive mode):
 	$ ./console.py
+	(hbnb) help
 
-## Alternatively:
+	Documented commands (type help <topic>):
+	========================================
+	EOF  help  quit
+
+	(hbnb)
+	(hbnb)
+	(hbnb) quit
+
+	$
+
+## Alternatively(non-interactive mode):
+
+	
 	$ echo "help" | ./console.py
+
+	(hbnb)
+	Documented commands (type help <topic>):
+	========================================
+	EOF  help  quit
+	
+	(hbnb)
+	$
+	$ cat test_help
+	help
+	$
+	$ cat test_help | ./console.py
+
+	(hbnb)
+
+	Documented commands (type help <topic>):
+	========================================
+	EOF  help  quit
+
+	(hbnb)
+
+	$

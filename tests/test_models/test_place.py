@@ -1,69 +1,36 @@
 #!/usr/bin/python3
-""" Test cases for the Place module """
+"""Defines unittests for models/place.py.
 
-
-import unittest
+Unittest classes:
+    TestPlace_instantiation
+    TestPlace_save
+    TestPlace_to_dict
+"""
 import os
-from models.base_model import BaseModel
-from models.place import Place
+import models
+import unittest
 from datetime import datetime
 from time import sleep
+from models.place import Place
 
 
-class TestPlace(unittest.TestCase):
-    """ Testcases for Place class"""
+class TestPlace_instantiation(unittest.TestCase):
+    """Unittests for testing instantiation of the Place class."""
 
-    @classmethod
-    def setUp(self):
-        try:
-            os.rename("file.json", "tmp")
-        except IOError:
-            pass
+    def test_no_args_instantiates(self):
+        self.assertEqual(Place, type(Place()))
 
-    def tearDown(self):
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("tmp", "file.json")
-        except IOError:
-            pass
+    def test_new_instance_stored_in_objects(self):
+        self.assertIn(Place(), models.storage.all().values())
 
-    def test_docs(self):
-        """ Test for documentation """
-        self.assertIsNotNone(Place.__doc__)
+    def test_id_is_public_str(self):
+        self.assertEqual(str, type(Place().id))
 
-    def test_inheritance(self):
-        """ Test for inheritance """
+    def test_created_at_is_public_datetime(self):
+        self.assertEqual(datetime, type(Place().created_at))
 
-        my_place = Place()
-        self.assertIsInstance(my_place, BaseModel)
-        self.assertIsInstance(my_place, Place)
-
-    def test_attributes(self):
-        """ Test for attributes """
-
-        my_place = Place()
-        self.assertTrue(hasattr(my_place, "city_id"))
-        self.assertTrue(hasattr(my_place, "user_id"))
-        self.assertTrue(hasattr(my_place, "name"))
-        self.assertTrue(hasattr(my_place, "description"))
-        self.assertTrue(hasattr(my_place, "number_rooms"))
-        self.assertTrue(hasattr(my_place, "number_bathrooms"))
-        self.assertTrue(hasattr(my_place, "max_guest"))
-        self.assertTrue(hasattr(my_place, "price_by_night"))
-        self.assertTrue(hasattr(my_place, "latitude"))
-        self.assertTrue(hasattr(my_place, "longitude"))
-        self.assertTrue(hasattr(my_place, "amenity_ids"))
-        self.assertTrue(type(my_place.amenity_ids), list)
-        self.assertTrue(hasattr(my_place, "created_at"))
-        self.assertTrue(hasattr(my_place, "updated_at"))
-        self.assertTrue(hasattr(my_place, "id"))
-        self.assertTrue(hasattr(my_place, "to_dict"))
-        self.assertTrue(hasattr(my_place, "__str__"))
-        self.assertTrue(hasattr(my_place, "save"))
-        self.assertTrue(hasattr(my_place, "__class__"))
+    def test_updated_at_is_public_datetime(self):
+        self.assertEqual(datetime, type(Place().updated_at))
 
     def test_city_id_is_public_class_attribute(self):
         pl = Place()
@@ -176,6 +143,27 @@ class TestPlace(unittest.TestCase):
         with self.assertRaises(TypeError):
             Place(id=None, created_at=None, updated_at=None)
 
+
+class TestPlace_save(unittest.TestCase):
+    """Unittests for testing save method of the Place class."""
+
+    @classmethod
+    def setUp(self):
+        try:
+            os.rename("file.json", "tmp")
+        except IOError:
+            pass
+
+    def tearDown(self):
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
+        try:
+            os.rename("tmp", "file.json")
+        except IOError:
+            pass
+
     def test_one_save(self):
         pl = Place()
         sleep(0.05)
@@ -205,6 +193,13 @@ class TestPlace(unittest.TestCase):
         plid = "Place." + pl.id
         with open("file.json", "r") as f:
             self.assertIn(plid, f.read())
+
+
+class TestPlace_to_dict(unittest.TestCase):
+    """Unittests for testing to_dict method of the Place class."""
+
+    def test_to_dict_type(self):
+        self.assertTrue(dict, type(Place().to_dict()))
 
     def test_to_dict_contains_correct_keys(self):
         pl = Place()

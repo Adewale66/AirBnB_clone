@@ -1,61 +1,48 @@
 #!/usr/bin/python3
-""" Test cases for the User module """
+"""Defines unittests for models/user.py.
 
-
+Unittest classes:
+    TestUser_instantiation
+    TestUser_save
+    TestUser_to_dict
+"""
 import os
+import models
 import unittest
-from models.base_model import BaseModel
-from models.user import User
 from datetime import datetime
 from time import sleep
+from models.user import User
 
 
-class TestUser(unittest.TestCase):
-    """ Testcases for User class"""
+class TestUser_instantiation(unittest.TestCase):
+    """Unittests for testing instantiation of the User class."""
 
-    @classmethod
-    def setUp(self):
-        try:
-            os.rename("file.json", "tmp")
-        except IOError:
-            pass
+    def test_no_args_instantiates(self):
+        self.assertEqual(User, type(User()))
 
-    def tearDown(self):
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("tmp", "file.json")
-        except IOError:
-            pass
+    def test_new_instance_stored_in_objects(self):
+        self.assertIn(User(), models.storage.all().values())
 
-    def test_docs(self):
-        """ Test for documentation """
-        self.assertIsNotNone(User.__doc__)
+    def test_id_is_public_str(self):
+        self.assertEqual(str, type(User().id))
 
-    def test_inheritance(self):
-        """ Test for inheritance """
+    def test_created_at_is_public_datetime(self):
+        self.assertEqual(datetime, type(User().created_at))
 
-        my_user = User()
-        self.assertIsInstance(my_user, User)
-        self.assertIsInstance(my_user, BaseModel)
+    def test_updated_at_is_public_datetime(self):
+        self.assertEqual(datetime, type(User().updated_at))
 
-    def test_attributes(self):
-        """ Test for attributes """
+    def test_email_is_public_str(self):
+        self.assertEqual(str, type(User.email))
 
-        my_user = User()
-        self.assertTrue(hasattr(my_user, "email"))
-        self.assertTrue(hasattr(my_user, "password"))
-        self.assertTrue(hasattr(my_user, "first_name"))
-        self.assertTrue(hasattr(my_user, "last_name"))
-        self.assertTrue(hasattr(my_user, "created_at"))
-        self.assertTrue(hasattr(my_user, "updated_at"))
-        self.assertTrue(hasattr(my_user, "id"))
-        self.assertTrue(hasattr(my_user, "to_dict"))
-        self.assertTrue(hasattr(my_user, "__str__"))
-        self.assertTrue(hasattr(my_user, "save"))
-        self.assertTrue(hasattr(my_user, "__class__"))
+    def test_password_is_public_str(self):
+        self.assertEqual(str, type(User.password))
+
+    def test_first_name_is_public_str(self):
+        self.assertEqual(str, type(User.first_name))
+
+    def test_last_name_is_public_str(self):
+        self.assertEqual(str, type(User.last_name))
 
     def test_two_users_unique_ids(self):
         us1 = User()
@@ -102,6 +89,27 @@ class TestUser(unittest.TestCase):
         with self.assertRaises(TypeError):
             User(id=None, created_at=None, updated_at=None)
 
+
+class TestUser_save(unittest.TestCase):
+    """Unittests for testing save method of the  class."""
+
+    @classmethod
+    def setUp(self):
+        try:
+            os.rename("file.json", "tmp")
+        except IOError:
+            pass
+
+    def tearDown(self):
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
+        try:
+            os.rename("tmp", "file.json")
+        except IOError:
+            pass
+
     def test_one_save(self):
         us = User()
         sleep(0.05)
@@ -131,6 +139,10 @@ class TestUser(unittest.TestCase):
         usid = "User." + us.id
         with open("file.json", "r") as f:
             self.assertIn(usid, f.read())
+
+
+class TestUser_to_dict(unittest.TestCase):
+    """Unittests for testing to_dict method of the User class."""
 
     def test_to_dict_type(self):
         self.assertTrue(dict, type(User().to_dict()))

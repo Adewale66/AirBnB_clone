@@ -17,11 +17,12 @@ class BaseModel():
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         if kwargs:
-            for key, value in kwargs.items():
-                if key == "created_at" or key == "updated_at":
-                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                if key != "__class__":
-                    setattr(self, key, value)
+            formatT = "%Y-%m-%dT%H:%M:%S.%f"
+            for k, v in kwargs.items():
+                if k == "created_at" or k == "updated_at":
+                    self.__dict__[k] = datetime.strptime(v, formatT)
+                else:
+                    self.__dict__[k] = v
         else:
             models.storage.new(self)
 
